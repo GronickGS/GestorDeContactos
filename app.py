@@ -16,6 +16,10 @@ class AplicacionGestorContactos:
         self.marco_principal = tk.Frame(root)
         self.marco_principal.pack(fill=tk.BOTH, expand=True)
 
+        # Título del sistema
+        self.titulo_sistema = tk.Label(self.marco_principal, text="SISTEMA GS", font=("Helvetica", 14, "bold"))
+        self.titulo_sistema.pack(side=tk.TOP, pady=10)
+
         # Marco para agregar contactos
         self.marco_agregar = tk.Frame(self.marco_principal, padx=10, pady=10)
         self.marco_agregar.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
@@ -42,6 +46,17 @@ class AplicacionGestorContactos:
 
         self.boton_agregar = tk.Button(self.marco_agregar, text="Agregar Contacto", command=self.agregar_contacto)
         self.boton_agregar.grid(row=3, column=0, columnspan=2, pady=10)
+
+        # Campo de búsqueda
+        self.marco_buscar = tk.Frame(self.marco_principal)
+        self.marco_buscar.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
+
+        self.etiqueta_buscar = tk.Label(self.marco_buscar, text="Buscar:")
+        self.etiqueta_buscar.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.entrada_buscar = tk.Entry(self.marco_buscar)
+        self.entrada_buscar.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.entrada_buscar.bind('<KeyRelease>', self.buscar_contacto)
 
         # Marco para mostrar contactos
         self.marco_mostrar = tk.Frame(self.marco_principal, padx=10, pady=10)
@@ -71,6 +86,18 @@ class AplicacionGestorContactos:
         # Cargar contactos existentes
         self.cargar_contactos()
 
+    def buscar_contacto(self, event=None):
+        texto_busqueda = self.entrada_buscar.get().lower()
+        contactos_filtrados = []
+
+        for contacto in self.contactos:
+            nombre = contacto[1].lower()
+            telefono = contacto[2].lower()
+            if texto_busqueda in nombre or texto_busqueda in telefono:
+                contactos_filtrados.append(contacto)
+
+        self.mostrar_contactos(contactos_filtrados)
+
     def crear_tabla(self):
         cursor = self.conexion.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS contactos
@@ -78,7 +105,7 @@ class AplicacionGestorContactos:
         self.conexion.commit()
 
     def agregar_contacto(self):
-        nombre = self.entrada_nombre.get()
+        nombre = self.entrada_nombre.get().capitalize()  # Capitaliza la primera letra del nombre
         telefono = self.entrada_telefono.get()
 
         if nombre and telefono:
@@ -97,17 +124,20 @@ class AplicacionGestorContactos:
 
     def cargar_contactos(self):
         cursor = self.conexion.cursor()
-        cursor.execute('SELECT * FROM contactos')
+        cursor.execute('SELECT * FROM contactos ORDER BY nombre ASC')  # Ordenar por nombre de forma ascendente
         self.contactos = cursor.fetchall()
         self.mostrar_contactos()
 
-    def mostrar_contactos(self):
+    def mostrar_contactos(self, contactos=None):
+        if contactos is None:
+            contactos = self.contactos
+
         # Limpiar árbol antes de volver a cargar los contactos
         for row in self.arbol.get_children():
             self.arbol.delete(row)
 
         # Insertar contactos en el árbol
-        for contacto in self.contactos:
+        for contacto in contactos:
             self.arbol.insert('', 'end', values=(contacto[1], contacto[2]))
 
     def exportar_a_csv(self):
