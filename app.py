@@ -8,6 +8,23 @@ class AplicacionGestorContactos:
         self.root = root
         self.root.title("Gestión de Contactos")
 
+        #============================================================================!
+        # anchura y altura de la pantalla
+        ancho_pantalla = root.winfo_screenwidth()
+        alto_pantalla = root.winfo_screenheight()
+
+        # anchura y altura de la ventana
+        ancho_ventana = 700  
+        alto_ventana = 450  
+
+        # Calcular la posición x y y para centrar la ventana
+        posicion_x = (ancho_pantalla - ancho_ventana) // 2
+        posicion_y = (alto_pantalla - alto_ventana) // 2
+
+        # posición de la ventana
+        root.geometry(f"{ancho_ventana}x{alto_ventana}+{posicion_x}+{posicion_y}")
+        #============================================================================!
+
         # Conexión a la base de datos SQLite
         self.conexion = sqlite3.connect('contactos.db')
         self.crear_tabla()
@@ -17,7 +34,7 @@ class AplicacionGestorContactos:
         self.marco_principal.pack(fill=tk.BOTH, expand=True)
 
         # Título del sistema
-        self.titulo_sistema = tk.Label(self.marco_principal, text="SISTEMA GS", font=("Helvetica", 14, "bold"))
+        self.titulo_sistema = tk.Label(self.marco_principal, text="SISTEMA GS", font=("Courier New", 14, "bold"),)
         self.titulo_sistema.pack(side=tk.TOP, pady=10)
 
         # Marco para agregar contactos
@@ -25,40 +42,39 @@ class AplicacionGestorContactos:
         self.marco_agregar.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         # Cargar la imagen y redimensionarla
-        self.imagen_usuario = tk.PhotoImage(file="user.png").subsample(5, 5)  # Ajusta los valores según sea necesario
+        self.imagen_usuario = tk.PhotoImage(file="user.png").subsample(5, 5)  # tamaño de imagen
 
-        # Crear un Label para mostrar la imagen encima de los campos de entrada
         self.etiqueta_imagen = tk.Label(self.marco_agregar, image=self.imagen_usuario)
         self.etiqueta_imagen.grid(row=0, column=1, padx=(0, 50), pady=0, sticky="nsew")
 
-        # Crear los widgets para agregar contactos
-        self.etiqueta_nombre = tk.Label(self.marco_agregar, text="Nombre:")
+        # widgets para agregar contactos
+        self.etiqueta_nombre = tk.Label(self.marco_agregar, text="Nombre:", font=("Courier New", 10, "bold"))
         self.etiqueta_nombre.grid(row=1, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_nombre = tk.Entry(self.marco_agregar)
         self.entrada_nombre.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
 
-        self.etiqueta_telefono = tk.Label(self.marco_agregar, text="Teléfono:")
+        self.etiqueta_telefono = tk.Label(self.marco_agregar, text="Teléfono:", font=("Courier New", 10, "bold"),)
         self.etiqueta_telefono.grid(row=2, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_telefono = tk.Entry(self.marco_agregar, validate="key", validatecommand=(root.register(self.es_numero), '%P'))
         self.entrada_telefono.grid(row=2, column=1, padx=10, pady=5, sticky="nsew")
 
-        self.boton_agregar = tk.Button(self.marco_agregar, text="Agregar Contacto", command=self.agregar_contacto)
+        self.boton_agregar = tk.Button(self.marco_agregar, text="Agregar Contacto", font=("Courier New", 10, "bold"), command=self.agregar_contacto, bg="red", fg="white", borderwidth=2, relief="raised")
         self.boton_agregar.grid(row=3, column=0, columnspan=2, pady=10)
 
         # Campo de búsqueda
         self.marco_buscar = tk.Frame(self.marco_principal)
         self.marco_buscar.pack(side=tk.TOP, fill=tk.X, padx=10, pady=5)
 
-        self.etiqueta_buscar = tk.Label(self.marco_buscar, text="Buscar:")
+        self.etiqueta_buscar = tk.Label(self.marco_buscar, text="Buscar:", font=("Courier New", 10, "bold"))
         self.etiqueta_buscar.pack(side=tk.LEFT, padx=(0, 5))
 
         self.entrada_buscar = tk.Entry(self.marco_buscar)
         self.entrada_buscar.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.entrada_buscar.bind('<KeyRelease>', self.buscar_contacto)
 
-        # Marco para mostrar contactos
+        # Mostrar contactos
         self.marco_mostrar = tk.Frame(self.marco_principal, padx=10, pady=10)
         self.marco_mostrar.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
@@ -69,7 +85,7 @@ class AplicacionGestorContactos:
         self.arbol.pack(expand=True, fill='both')
 
         # Botón para exportar a CSV
-        self.boton_exportar = tk.Button(self.marco_mostrar, text="Exportar a CSV", command=self.exportar_a_csv)
+        self.boton_exportar = tk.Button(self.marco_mostrar, text="Exportar a CSV", font=("Courier New", 10, "bold"), command=self.exportar_a_csv, bg="red", fg="white", borderwidth=2, relief="raised")
         self.boton_exportar.pack(side=tk.BOTTOM, pady=10)
 
         # Marco para los botones de edición y borrado
@@ -77,10 +93,10 @@ class AplicacionGestorContactos:
         self.marco_botones.pack(side=tk.BOTTOM)
 
         # Botones para editar y borrar contacto
-        self.boton_editar = tk.Button(self.marco_botones, text="Editar", command=self.editar_contacto)
+        self.boton_editar = tk.Button(self.marco_botones, text="Editar", font=("Courier New", 10, "bold"), command=self.editar_contacto, bg="red", fg="white", borderwidth=2, relief="raised")
         self.boton_editar.pack(side=tk.LEFT, padx=5, pady=(10, 0))  # Ajusta el margen superior (top) a 5
 
-        self.boton_borrar = tk.Button(self.marco_botones, text="Borrar", command=self.borrar_contacto)
+        self.boton_borrar = tk.Button(self.marco_botones, text="Borrar", font=("Courier New", 10, "bold"),command=self.borrar_contacto, bg="red", fg="white", borderwidth=2, relief="raised")
         self.boton_borrar.pack(side=tk.LEFT, padx=5, pady=(10, 0))  # Ajusta el margen superior (top) a 5
 
         # Cargar contactos existentes
@@ -136,7 +152,7 @@ class AplicacionGestorContactos:
         for row in self.arbol.get_children():
             self.arbol.delete(row)
 
-        # Insertar contactos en el árbol
+        # Insertar contactos
         for contacto in contactos:
             self.arbol.insert('', 'end', values=(contacto[1], contacto[2]))
 
@@ -159,7 +175,6 @@ class AplicacionGestorContactos:
             nombre = self.arbol.item(elemento_seleccionado, 'values')[0]
             telefono = self.arbol.item(elemento_seleccionado, 'values')[1]
 
-            # Popup para editar el contacto
             ventana_editar = tk.Toplevel(self.root)
             ventana_editar.title("Editar Contacto")
 
@@ -175,7 +190,7 @@ class AplicacionGestorContactos:
             entrada_telefono.insert(0, telefono)
             entrada_telefono.grid(row=1, column=1, padx=10, pady=5)
 
-            boton_guardar = tk.Button(ventana_editar, text="Guardar Cambios", command=lambda: self.guardar_cambios(elemento_seleccionado, entrada_nombre.get(), entrada_telefono.get(), ventana_editar))
+            boton_guardar = tk.Button(ventana_editar, text="Guardar Cambios", command=lambda: self.guardar_cambios(elemento_seleccionado, entrada_nombre.get(), entrada_telefono.get(), ventana_editar), bg="red", fg="white")
             boton_guardar.grid(row=2, column=0, columnspan=2, pady=10)
 
     def borrar_contacto(self):

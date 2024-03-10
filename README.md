@@ -7,6 +7,7 @@ Permite al usuario realizar las siguientes acciones:
 - **Agregar Contacto**: Agrega un nuevo contacto proporcionando su nombre y número de teléfono.
 - **Editar Contacto**: Permite al usuario editar los detalles de un contacto existente.
 - **Borrar Contacto**: Elimina un contacto de la lista.
+- **Bucar Contacto**: Se puede buscar un contacto por el nombre o numero.
 - **Exportar a CSV**: Permite al usuario exportar la lista de contactos a un archivo CSV.
 
 ## Requisitos
