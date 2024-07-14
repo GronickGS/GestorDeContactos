@@ -47,19 +47,21 @@ class AplicacionGestorContactos:
         self.etiqueta_imagen = tk.Label(self.marco_agregar, image=self.imagen_usuario)
         self.etiqueta_imagen.grid(row=0, column=1, padx=(0, 50), pady=0, sticky="nsew")
 
-        # widgets para agregar contactos
+        #============================================================================ widgets para agregar contactos
         self.etiqueta_nombre = tk.Label(self.marco_agregar, text="Nombre:", font=("Courier New", 10, "bold"))
         self.etiqueta_nombre.grid(row=1, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_nombre = tk.Entry(self.marco_agregar)
         self.entrada_nombre.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
 
+        #============================================================================ widgets para agregar contactos
         self.etiqueta_telefono = tk.Label(self.marco_agregar, text="Teléfono:", font=("Courier New", 10, "bold"),)
         self.etiqueta_telefono.grid(row=2, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_telefono = tk.Entry(self.marco_agregar, validate="key", validatecommand=(root.register(self.es_numero), '%P'))
         self.entrada_telefono.grid(row=2, column=1, padx=10, pady=5, sticky="nsew")
 
+        #============================================================================ boton para agregar
         self.boton_agregar = tk.Button(self.marco_agregar, text="Agregar Contacto", font=("Courier New", 10, "bold"), command=self.agregar_contacto, bg="red", fg="white", borderwidth=2, relief="raised")
         self.boton_agregar.grid(row=3, column=0, columnspan=2, pady=10)
 
