@@ -1,20 +1,20 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import sqlite3
-import csv
+import csv 
 
 class AplicacionGestorContactos:
     def __init__(self, root):
         self.root = root
         self.root.title("Gestión de Contactos")
 
-        #============================================================================
+        #============================================================================!
         # anchura y altura de la pantalla
         ancho_pantalla = root.winfo_screenwidth()
         alto_pantalla = root.winfo_screenheight()
 
         # anchura y altura de la ventana
-        ancho_ventana = 1000  
+        ancho_ventana = 700  
         alto_ventana = 450  
 
         # Calcular la posición x y y para centrar la ventana
@@ -23,10 +23,10 @@ class AplicacionGestorContactos:
 
         # posición de la ventana
         root.geometry(f"{ancho_ventana}x{alto_ventana}+{posicion_x}+{posicion_y}")
-        #============================================================================
+        #============================================================================!
 
         # Conexión a la base de datos SQLite
-        self.conexion = sqlite3.connect('bd_contactos.db')
+        self.conexion = sqlite3.connect('contactos.db')
         self.crear_tabla()
 
         # Marco principal
@@ -47,30 +47,23 @@ class AplicacionGestorContactos:
         self.etiqueta_imagen = tk.Label(self.marco_agregar, image=self.imagen_usuario)
         self.etiqueta_imagen.grid(row=0, column=1, padx=(0, 50), pady=0, sticky="nsew")
 
-        #============================================================================
-        # Widgets para agregar contactos
+        #============================================================================ widgets para agregar Nombre
         self.etiqueta_nombre = tk.Label(self.marco_agregar, text="Nombre:", font=("Courier New", 10, "bold"))
         self.etiqueta_nombre.grid(row=1, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_nombre = tk.Entry(self.marco_agregar)
         self.entrada_nombre.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
 
-        self.etiqueta_apellido = tk.Label(self.marco_agregar, text="Apellido:", font=("Courier New", 10, "bold"))
-        self.etiqueta_apellido.grid(row=2, column=0, sticky="e", padx=10, pady=5)
-
-        self.entrada_apellido = tk.Entry(self.marco_agregar)
-        self.entrada_apellido.grid(row=2, column=1, padx=10, pady=5, sticky="nsew")
-
-        self.etiqueta_telefono = tk.Label(self.marco_agregar, text="Teléfono:", font=("Courier New", 10, "bold"))
-        self.etiqueta_telefono.grid(row=3, column=0, sticky="e", padx=10, pady=5)
+        #============================================================================ widgets para agregar Telefono
+        self.etiqueta_telefono = tk.Label(self.marco_agregar, text="Teléfono:", font=("Courier New", 10, "bold"),)
+        self.etiqueta_telefono.grid(row=2, column=0, sticky="e", padx=10, pady=5)
 
         self.entrada_telefono = tk.Entry(self.marco_agregar, validate="key", validatecommand=(root.register(self.es_numero), '%P'))
-        self.entrada_telefono.grid(row=3, column=1, padx=10, pady=5, sticky="nsew")
+        self.entrada_telefono.grid(row=2, column=1, padx=10, pady=5, sticky="nsew")
 
-        #============================================================================
-        # Botón para agregar
+        #============================================================================ boton para agregar
         self.boton_agregar = tk.Button(self.marco_agregar, text="Agregar Contacto", font=("Courier New", 10, "bold"), command=self.agregar_contacto, bg="red", fg="white", borderwidth=2, relief="raised")
-        self.boton_agregar.grid(row=4, column=0, columnspan=2, pady=10)
+        self.boton_agregar.grid(row=3, column=0, columnspan=2, pady=10)
 
         # Campo de búsqueda
         self.marco_buscar = tk.Frame(self.marco_principal)
@@ -88,9 +81,8 @@ class AplicacionGestorContactos:
         self.marco_mostrar.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
         # Crear el árbol para mostrar contactos
-        self.arbol = ttk.Treeview(self.marco_mostrar, columns=('Nombre', 'Apellido', 'Teléfono'), show='headings')
+        self.arbol = ttk.Treeview(self.marco_mostrar, columns=('Nombre', 'Teléfono'), show='headings')
         self.arbol.heading('Nombre', text='Nombre')
-        self.arbol.heading('Apellido', text='Apellido')
         self.arbol.heading('Teléfono', text='Teléfono')
         self.arbol.pack(expand=True, fill='both')
 
@@ -118,9 +110,8 @@ class AplicacionGestorContactos:
 
         for contacto in self.contactos:
             nombre = contacto[1].lower()
-            apellido = contacto[2].lower()
-            telefono = contacto[3].lower()
-            if texto_busqueda in nombre or texto_busqueda in apellido or texto_busqueda in telefono:
+            telefono = contacto[2].lower()
+            if texto_busqueda in nombre or texto_busqueda in telefono:
                 contactos_filtrados.append(contacto)
 
         self.mostrar_contactos(contactos_filtrados)
@@ -128,17 +119,16 @@ class AplicacionGestorContactos:
     def crear_tabla(self):
         cursor = self.conexion.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS contactos
-                          (id INTEGER PRIMARY KEY, nombre TEXT, apellido TEXT, telefono TEXT)''')
+                          (id INTEGER PRIMARY KEY, nombre TEXT, telefono TEXT)''')
         self.conexion.commit()
 
     def agregar_contacto(self):
-        nombre = self.entrada_nombre.get().capitalize()  
-        apellido = self.entrada_apellido.get().capitalize()  
+        nombre = self.entrada_nombre.get().capitalize()  # Capitaliza la primera letra del nombre
         telefono = self.entrada_telefono.get()
 
-        if nombre and apellido and telefono:
+        if nombre and telefono:
             cursor = self.conexion.cursor()
-            cursor.execute('INSERT INTO contactos (nombre, apellido, telefono) VALUES (?, ?, ?)', (nombre, apellido, telefono))
+            cursor.execute('INSERT INTO contactos (nombre, telefono) VALUES (?, ?)', (nombre, telefono))
             self.conexion.commit()
             messagebox.showinfo("Éxito", "Contacto agregado correctamente")
             self.limpiar_entradas()
@@ -148,7 +138,6 @@ class AplicacionGestorContactos:
 
     def limpiar_entradas(self):
         self.entrada_nombre.delete(0, tk.END)
-        self.entrada_apellido.delete(0, tk.END)
         self.entrada_telefono.delete(0, tk.END)
 
     def cargar_contactos(self):
@@ -167,26 +156,26 @@ class AplicacionGestorContactos:
 
         # Insertar contactos
         for contacto in contactos:
-            self.arbol.insert('', 'end', values=(contacto[1], contacto[2], contacto[3]))
+            self.arbol.insert('', 'end', values=(contacto[1], contacto[2]))
 
     def exportar_a_csv(self):
         if self.contactos:
             nombre_archivo = "contactos.csv"
-            with open(nombre_archivo, mode='w', newline='') as archivo_csv:
-                escritor_csv = csv.writer(archivo_csv, delimiter=',')
-                escritor_csv.writerow(['Nombre', 'Apellido', 'Teléfono'])  # Encabezados de las columnas
+            with open(nombre_archivo, 'w', newline='') as csvfile:
+                nombres_columnas = ['Nombre', 'Teléfono']
+                escritor_csv = csv.DictWriter(csvfile, fieldnames=nombres_columnas)
+                escritor_csv.writeheader()
                 for contacto in self.contactos:
-                    escritor_csv.writerow([contacto[1], contacto[2], contacto[3]])  # Escribir filas
-            messagebox.showinfo("Éxito", f"Contactos exportados a {nombre_archivo} correctamente")
+                    escritor_csv.writerow({'Nombre': contacto[1], 'Teléfono': contacto[2]})
+            messagebox.showinfo("Éxito", f"Contactos exportados a {nombre_archivo}")
         else:
             messagebox.showerror("Error", "No hay contactos para exportar")
-
+    
     def editar_contacto(self):
         elemento_seleccionado = self.arbol.selection()
         if elemento_seleccionado:
             nombre = self.arbol.item(elemento_seleccionado, 'values')[0]
-            apellido = self.arbol.item(elemento_seleccionado, 'values')[1]
-            telefono = self.arbol.item(elemento_seleccionado, 'values')[2]
+            telefono = self.arbol.item(elemento_seleccionado, 'values')[1]
 
             ventana_editar = tk.Toplevel(self.root)
             ventana_editar.title("Editar Contacto")
@@ -197,43 +186,34 @@ class AplicacionGestorContactos:
             entrada_nombre.insert(0, nombre)
             entrada_nombre.grid(row=0, column=1, padx=10, pady=5)
 
-            etiqueta_apellido = tk.Label(ventana_editar, text="Apellido:")
-            etiqueta_apellido.grid(row=1, column=0, padx=10, pady=5)
-            entrada_apellido = tk.Entry(ventana_editar)
-            entrada_apellido.insert(0, apellido)
-            entrada_apellido.grid(row=1, column=1, padx=10, pady=5)
-
             etiqueta_telefono = tk.Label(ventana_editar, text="Teléfono:")
-            etiqueta_telefono.grid(row=2, column=0, padx=10, pady=5)
+            etiqueta_telefono.grid(row=1, column=0, padx=10, pady=5)
             entrada_telefono = tk.Entry(ventana_editar)
             entrada_telefono.insert(0, telefono)
-            entrada_telefono.grid(row=2, column=1, padx=10, pady=5)
+            entrada_telefono.grid(row=1, column=1, padx=10, pady=5)
 
-            boton_guardar = tk.Button(ventana_editar, text="Guardar Cambios", command=lambda: self.guardar_cambios(elemento_seleccionado, entrada_nombre.get(), entrada_apellido.get(), entrada_telefono.get(), ventana_editar), bg="red", fg="white")
-            boton_guardar.grid(row=3, column=0, columnspan=2, pady=10)
-
-    def guardar_cambios(self, elemento_seleccionado, nuevo_nombre, nuevo_apellido, nuevo_telefono, ventana_editar):
-        cursor = self.conexion.cursor()
-        cursor.execute('UPDATE contactos SET nombre=?, apellido=?, telefono=? WHERE nombre=? AND apellido=? AND telefono=?',
-                       (nuevo_nombre, nuevo_apellido, nuevo_telefono, self.arbol.item(elemento_seleccionado, 'values')[0], self.arbol.item(elemento_seleccionado, 'values')[1], self.arbol.item(elemento_seleccionado, 'values')[2]))
-        self.conexion.commit()
-        messagebox.showinfo("Éxito", "Contacto actualizado correctamente")
-        ventana_editar.destroy()
-        self.cargar_contactos()
+            boton_guardar = tk.Button(ventana_editar, text="Guardar Cambios", command=lambda: self.guardar_cambios(elemento_seleccionado, entrada_nombre.get(), entrada_telefono.get(), ventana_editar), bg="red", fg="white")
+            boton_guardar.grid(row=2, column=0, columnspan=2, pady=10)
 
     def borrar_contacto(self):
         elemento_seleccionado = self.arbol.selection()
         if elemento_seleccionado:
-            nombre = self.arbol.item(elemento_seleccionado, 'values')[0]
-            apellido = self.arbol.item(elemento_seleccionado, 'values')[1]
-            telefono = self.arbol.item(elemento_seleccionado, 'values')[2]
-            confirmar = messagebox.askyesno("Confirmar", "¿Está seguro de que desea borrar este contacto?")
-            if confirmar:
+            confirmacion = messagebox.askyesno("Eliminar Contacto", "¿Está seguro que desea eliminar este contacto?")
+            if confirmacion:
                 cursor = self.conexion.cursor()
-                cursor.execute('DELETE FROM contactos WHERE nombre=? AND apellido=? AND telefono=?', (nombre, apellido, telefono))
+                cursor.execute('DELETE FROM contactos WHERE nombre=? AND telefono=?',
+                            (self.arbol.item(elemento_seleccionado, 'values')[0], self.arbol.item(elemento_seleccionado, 'values')[1]))
                 self.conexion.commit()
-                messagebox.showinfo("Éxito", "Contacto borrado correctamente")
                 self.cargar_contactos()
+
+    def guardar_cambios(self, elemento_seleccionado, nuevo_nombre, nuevo_telefono, ventana_editar):
+        cursor = self.conexion.cursor()
+        cursor.execute('UPDATE contactos SET nombre=?, telefono=? WHERE nombre=? AND telefono=?',
+                       (nuevo_nombre, nuevo_telefono, self.arbol.item(elemento_seleccionado, 'values')[0], self.arbol.item(elemento_seleccionado, 'values')[1]))
+        self.conexion.commit()
+        messagebox.showinfo("Éxito", "Contacto actualizado correctamente")
+        ventana_editar.destroy()
+        self.cargar_contactos()
 
     def es_numero(self, texto):
         return texto.isdigit() or texto == ""
